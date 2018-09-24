@@ -127,6 +127,7 @@
         <module>gateway-shell-release</module>
         <module>gateway-test-release-utils</module>
         <module>gateway-service-nifi</module>
+        <module>gateway-docker</module>
     </modules>
 
     <properties>
