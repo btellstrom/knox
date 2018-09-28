@@ -155,13 +155,13 @@ public class Urls {
     if( parts != null ) {
       String p = "";
       String n = "";
-      for( int i=0; i<parts.length; i++ ) {
-        n = trimLeadingAndTrailingSlash( parts[i] );
-        if( !n.isEmpty() ) {
-          if( !p.isEmpty() ) {
-            s.append( '/' );
+      for (String part : parts) {
+        n = trimLeadingAndTrailingSlash(part);
+        if (!n.isEmpty()) {
+          if (!p.isEmpty()) {
+            s.append('/');
           }
-          s.append( n );
+          s.append(n);
           p = n;
         }
       }

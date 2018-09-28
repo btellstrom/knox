@@ -501,9 +501,9 @@ public class GatewayServer {
     } else {
       /* check for port conflict */
       final Connector[] connectors = jetty.getConnectors();
-      for (int i = 0; i < connectors.length; i++) {
-        if (connectors[i] instanceof ServerConnector
-            && ((ServerConnector) connectors[i]).getPort() == port) {
+      for (Connector connector : connectors) {
+        if (connector instanceof ServerConnector
+            && ((ServerConnector) connector).getPort() == port) {
           log.portAlreadyInUse(port, topologyName);
           throw new IOException(String.format(Locale.ROOT,
               " Port %d used by topology %s is used by other topology, ports for topologies (if defined) have to be unique. ",
@@ -1010,13 +1010,7 @@ public class GatewayServer {
     public int compare( File left, File right ) {
       long leftTime = ( left == null ? Long.MIN_VALUE : left.lastModified() );
       long rightTime = ( right == null ? Long.MIN_VALUE : right.lastModified() );
-      if( leftTime > rightTime ) {
-        return -1;
-      } else if ( leftTime < rightTime ) {
-        return 1;
-      } else {
-        return 0;
-      }
+      return Long.compare(rightTime, leftTime);
     }
   }
 

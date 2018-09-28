@@ -96,13 +96,7 @@ public class Version implements Comparable<Version> {
     if (minor < version.getMinor()) {
       return -1;
     }
-    if (patch > version.getPatch()) {
-      return 1;
-    }
-    if (patch < version.getPatch()) {
-      return -1;
-    }
-    return 0;
+    return Integer.compare(patch, version.getPatch());
   }
 
   @Override

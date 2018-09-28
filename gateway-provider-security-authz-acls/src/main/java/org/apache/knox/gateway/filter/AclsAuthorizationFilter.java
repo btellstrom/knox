@@ -226,8 +226,8 @@ public class AclsAuthorizationFilter implements Filter {
 
   private boolean hasAllowedPrincipal(List<String> allowed, Object[] userGroups) {
     boolean rc = false;
-    for (int i = 0; i < userGroups.length; i++) {
-      if (allowed.contains(((Principal)userGroups[i]).getName())) {
+    for (Object userGroup : userGroups) {
+      if (allowed.contains(((Principal) userGroup).getName())) {
         rc = true;
         break;
       }

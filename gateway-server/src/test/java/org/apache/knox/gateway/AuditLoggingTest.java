@@ -88,14 +88,14 @@ public class AuditLoggingTest {
   public void reset() {
     AuditServiceFactory.getAuditService().detachContext();
   }
-
-  @Test
+  
   /**
    * Empty filter chain. Two events with same correlation ID are expected:
    *
    * action=access request_type=uri outcome=unavailable
    * action=access request_type=uri outcome=success message=Response status: 404
    */
+  @Test
   public void testNoFiltersAudit() throws Exception {
     FilterConfig config = EasyMock.createNiceMock( FilterConfig.class );
     EasyMock.replay( config );
@@ -167,12 +167,12 @@ public class AuditLoggingTest {
     assertThat(requestIds.size(), is(numberTotalRequests));
   }
 
-  @Test
   /**
    * One NoOp filter in chain. Single audit event with same with specified request URI is expected:
    *
    * action=access request_type=uri outcome=unavailable
    */
+  @Test
   public void testNoopFilter() throws ServletException, IOException,
       URISyntaxException {
 
@@ -218,14 +218,14 @@ public class AuditLoggingTest {
         Action.ACCESS, ActionOutcome.UNAVAILABLE, null, "Request method: GET" );
 
   }
-
-  @Test
+  
   /**
    * Dispatching outbound request. Remote host is unreachable. Two log events is expected:
    *
    * action=dispatch request_type=uri outcome=FAILED
    * action=dispatch request_type=uri outcome=unavailable
    */
+  @Test
   public void testHttpClientOutboundException() throws IOException,
       URISyntaxException {
     String uri = "http://outbound-host:port/path";

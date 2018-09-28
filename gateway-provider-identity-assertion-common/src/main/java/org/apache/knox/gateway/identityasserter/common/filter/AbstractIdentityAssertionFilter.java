@@ -185,8 +185,8 @@ public abstract class AbstractIdentityAssertionFilter extends
       auditor.audit( Action.IDENTITY_MAPPING, mappedPrincipalName, ResourceType.PRINCIPAL, 
           ActionOutcome.SUCCESS, RES.groupsList( Arrays.toString( groups ) ) );
 
-      for (int i = 0; i < groups.length; i++) {
-        subject.getPrincipals().add(new GroupPrincipal(groups[i]));
+      for (String group : groups) {
+        subject.getPrincipals().add(new GroupPrincipal(group));
       }
     }
   }

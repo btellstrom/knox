@@ -804,7 +804,7 @@ public class UrlRewriteServletFilterTest {
 
   /*
    * Test the prefix function
-   * @see KNOX-994
+   * See KNOX-994
    * @since 0.14.0
    */
   @Test
