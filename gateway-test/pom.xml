@@ -351,7 +351,6 @@
                             <outputAbsoluteArtifactFilename>true</outputAbsoluteArtifactFilename>
                             <overWriteSnapshots>true</overWriteSnapshots>
                             <overWriteIfNewer>true</overWriteIfNewer>
-                            <stripVersion>true</stripVersion>
                         </configuration>
                     </execution>
                 </executions>

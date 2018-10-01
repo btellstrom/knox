@@ -802,9 +802,8 @@ public class UrlRewriteServletFilterTest {
     assertThat(content, anyOf( is(responseHtmlOne), is(responseHtmlTwo)));
   }
 
-  /*
-   * Test the prefix function
-   * @see KNOX-994
+  /**
+   * Test the prefix function - KNOX-994
    * @since 0.14.0
    */
   @Test
