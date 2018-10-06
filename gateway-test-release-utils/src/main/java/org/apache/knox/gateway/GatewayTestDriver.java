@@ -30,8 +30,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -89,12 +87,9 @@ public class GatewayTestDriver {
    * @throws Exception Thrown if a failure occurs.
    */
   public int setupLdap( int port ) throws Exception {
-    String basedir = System.getProperty("basedir");
-    if (basedir == null) {
-      basedir = new File(".").getCanonicalPath();
-    }
-    Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/users.ldif");
-    return setupLdap( port, path.toFile() );
+    URL path = GatewayTestDriver.class.getClassLoader().getResource("users-static.ldif");
+    assert path != null;
+    return setupLdap( port, new File(path.toURI()) );
   }
 
   public int setupLdap( int port, File ldifConfig ) throws Exception {
@@ -145,9 +140,9 @@ public class GatewayTestDriver {
     deployDir.mkdirs();
 
     File descriptor = new File( topoDir, cluster + ".xml" );
-    FileOutputStream stream = new FileOutputStream( descriptor );
-    topology.toStream( stream );
-    stream.close();
+    try(FileOutputStream stream = new FileOutputStream( descriptor )) {
+      topology.toStream(stream);
+    }
 
     this.srvcs = new DefaultGatewayServices();
     Map<String,String> options = new HashMap<>();
@@ -349,6 +344,4 @@ public class GatewayTestDriver {
       service.server.reset();
     }
   }
-
-
 }

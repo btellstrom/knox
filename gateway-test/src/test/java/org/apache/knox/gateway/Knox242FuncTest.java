@@ -25,8 +25,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.net.URL;
-import java.nio.file.FileSystems;
-import java.nio.file.Path;
 
 import org.apache.knox.gateway.services.GatewayServices;
 import org.apache.knox.gateway.services.security.AliasService;
@@ -52,13 +50,9 @@ public class Knox242FuncTest {
   @BeforeClass
   public static void setupSuite() throws Exception {
     LOG_ENTER();
-    //appenders = NoOpAppender.setUp();
-    String basedir = System.getProperty("basedir");
-    if (basedir == null) {
-      basedir = new File(".").getCanonicalPath();
-    }
-    Path path = FileSystems.getDefault().getPath(basedir, "/src/test/resources/users-dynamic.ldif");
-    driver.setupLdap( 0 , path.toFile() );
+    URL resource = Knox242FuncTest.class.getClassLoader().getResource("users-dynamic.ldif");
+    assert resource != null;
+    driver.setupLdap( 0, new File(resource.toURI()) );
     setupGateway();
     LOG_EXIT();
   }
