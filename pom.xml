@@ -154,6 +154,7 @@
         <commons-lang.version>2.6</commons-lang.version>
         <commons-lang3.version>3.8.1</commons-lang3.version>
         <commons-net.version>3.6</commons-net.version>
+        <conscrypt-openjdk-uber.version>1.2.0</conscrypt-openjdk-uber.version>
         <cors-filter.version>2.6</cors-filter.version>
         <curator.version>4.0.1</curator.version>
         <curator-test.version>2.12.0</curator-test.version>
@@ -1795,6 +1796,12 @@
                 <artifactId>curator-test</artifactId>
                 <version>${curator-test.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.conscrypt</groupId>
+                <artifactId>conscrypt-openjdk-uber</artifactId>
+                <version>${conscrypt-openjdk-uber.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

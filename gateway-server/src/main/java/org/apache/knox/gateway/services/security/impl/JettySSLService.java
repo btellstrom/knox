@@ -23,6 +23,7 @@ import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.Security;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateExpiredException;
@@ -44,6 +45,7 @@ import org.apache.knox.gateway.services.security.KeystoreServiceException;
 import org.apache.knox.gateway.services.security.MasterService;
 import org.apache.knox.gateway.services.security.SSLService;
 import org.apache.knox.gateway.util.X500PrincipalParser;
+import org.conscrypt.OpenSSLProvider;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 public class JettySSLService implements SSLService {
@@ -169,7 +171,8 @@ public class JettySSLService implements SSLService {
   }
 
   @Override
-  public Object buildSslContextFactory(String keystoreFileName ) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+  public Object buildSslContextFactory( String keystoreFileName ) throws KeyStoreException, IOException, CertificateException, NoSuchAlgorithmException {
+    Security.addProvider(new OpenSSLProvider());
     SslContextFactory sslContextFactory = new SslContextFactory( true );
     sslContextFactory.setCertAlias( "gateway-identity" );
     sslContextFactory.setKeyStoreType(keystoreType);
@@ -231,6 +234,8 @@ public class JettySSLService implements SSLService {
     if (sslExcludeProtocols != null && !sslExcludeProtocols.isEmpty()) {
       sslContextFactory.setExcludeProtocols( sslExcludeProtocols.toArray(new String[sslExcludeProtocols.size()]) );
     }
+
+    sslContextFactory.setProvider("Conscrypt");
     return sslContextFactory;
   }
   
