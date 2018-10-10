@@ -15,12 +15,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.apache.knox.gateway.ha.dispatch;
 
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.Header;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -58,13 +57,12 @@ public class AtlasApiHaDispatch extends DefaultHaDispatch {
 
 
     @Override
-    protected void executeRequest(HttpUriRequest outboundRequest, HttpServletRequest inboundRequest, HttpServletResponse outboundResponse) throws IOException {
-        HttpResponse inboundResponse = null;
+    protected void executeRequest(ClassicHttpRequest outboundRequest, HttpServletRequest inboundRequest, HttpServletResponse outboundResponse) throws IOException {
+        ClassicHttpResponse inboundResponse = null;
         try {
             inboundResponse = executeOutboundRequest(outboundRequest);
-            int statusCode = inboundResponse.getStatusLine().getStatusCode();
+            int statusCode = inboundResponse.getCode();
             Header originalLocationHeader = inboundResponse.getFirstHeader("Location");
-
 
             if ((statusCode == HttpServletResponse.SC_MOVED_TEMPORARILY || statusCode == HttpServletResponse.SC_TEMPORARY_REDIRECT) && originalLocationHeader != null) {
                 inboundResponse.removeHeaders("Location");
@@ -74,7 +72,7 @@ public class AtlasApiHaDispatch extends DefaultHaDispatch {
             writeOutboundResponse(outboundRequest, inboundRequest, outboundResponse, inboundResponse);
 
         } catch (IOException e) {
-            LOG.errorConnectingToServer(outboundRequest.getURI().toString(), e);
+            LOG.errorConnectingToServer(outboundRequest.getRequestUri(), e);
             failoverRequest(outboundRequest, inboundRequest, outboundResponse, inboundResponse, e);
         }
     }

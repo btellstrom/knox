@@ -17,11 +17,11 @@
  */
 package org.apache.knox.gateway.dispatch;
 
-import org.apache.http.client.HttpClient;
+import org.apache.hc.client5.http.classic.HttpClient;
 
 import javax.servlet.FilterConfig;
 
 public interface HttpClientFactory {
 
-  public HttpClient createHttpClient( FilterConfig filterConfig );
+  public HttpClient createHttpClient(FilterConfig filterConfig );
 }

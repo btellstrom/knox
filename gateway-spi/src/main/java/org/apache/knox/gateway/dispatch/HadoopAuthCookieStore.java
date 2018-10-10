@@ -24,9 +24,9 @@ import java.util.Date;
 import java.util.Properties;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.client.BasicCookieStore;
-import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.client5.http.cookie.BasicCookieStore;
+import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
 import org.apache.knox.gateway.SpiGatewayMessages;
 import org.apache.knox.gateway.config.GatewayConfig;
 import org.apache.knox.gateway.i18n.messages.MessagesFactory;
@@ -135,16 +135,6 @@ public class HadoopAuthCookieStore extends BasicCookieStore {
     }
 
     @Override
-    public String getComment() {
-      return delegate.getComment();
-    }
-
-    @Override
-    public String getCommentURL() {
-      return delegate.getCommentURL();
-    }
-
-    @Override
     public Date getExpiryDate() {
       return delegate.getExpiryDate();
     }
@@ -165,18 +155,8 @@ public class HadoopAuthCookieStore extends BasicCookieStore {
     }
 
     @Override
-    public int[] getPorts() {
-      return delegate.getPorts();
-    }
-
-    @Override
     public boolean isSecure() {
       return delegate.isSecure();
-    }
-
-    @Override
-    public int getVersion() {
-      return delegate.getVersion();
     }
 
     @Override

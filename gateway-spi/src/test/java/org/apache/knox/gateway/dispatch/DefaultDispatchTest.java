@@ -38,18 +38,17 @@ import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpVersion;
+import org.apache.hc.core5.http.message.RequestLine;
 import org.apache.knox.gateway.config.GatewayConfig;
 import org.apache.knox.gateway.servlet.SynchronousServletOutputStreamAdapter;
 import org.apache.knox.test.TestUtils;
 import org.apache.knox.test.category.FastTests;
 import org.apache.knox.test.category.UnitTests;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpVersion;
-import org.apache.http.RequestLine;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
-import org.apache.http.params.BasicHttpParams;
 import org.easymock.EasyMock;
 import org.easymock.IAnswer;
 import org.junit.Test;
@@ -63,17 +62,14 @@ public class DefaultDispatchTest {
   public void testJiraKnox58() throws URISyntaxException, IOException {
 
     URI uri = new URI( "http://unreachable-host" );
-    BasicHttpParams params = new BasicHttpParams();
 
-    HttpUriRequest outboundRequest = EasyMock.createNiceMock( HttpUriRequest.class );
+    ClassicHttpRequest outboundRequest = EasyMock.createNiceMock( ClassicHttpRequest.class );
     EasyMock.expect( outboundRequest.getMethod() ).andReturn( "GET" ).anyTimes();
-    EasyMock.expect( outboundRequest.getURI() ).andReturn( uri  ).anyTimes();
+    EasyMock.expect( outboundRequest.getUri() ).andReturn( uri  ).anyTimes();
 
     RequestLine requestLine = EasyMock.createNiceMock( RequestLine.class );
     EasyMock.expect( requestLine.getMethod() ).andReturn( "GET" ).anyTimes();
     EasyMock.expect( requestLine.getProtocolVersion() ).andReturn( HttpVersion.HTTP_1_1 ).anyTimes();
-    EasyMock.expect( outboundRequest.getRequestLine() ).andReturn( requestLine ).anyTimes();
-    EasyMock.expect( outboundRequest.getParams() ).andReturn( params ).anyTimes();
 
     HttpServletRequest inboundRequest = EasyMock.createNiceMock( HttpServletRequest.class );
 

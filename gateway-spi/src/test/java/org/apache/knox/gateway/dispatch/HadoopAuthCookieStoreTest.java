@@ -17,8 +17,8 @@
  */
 package org.apache.knox.gateway.dispatch;
 
-import org.apache.http.cookie.Cookie;
-import org.apache.http.impl.cookie.BasicClientCookie;
+import org.apache.hc.client5.http.cookie.Cookie;
+import org.apache.hc.client5.http.impl.cookie.BasicClientCookie;
 import org.apache.knox.gateway.config.GatewayConfig;
 import org.easymock.EasyMock;
 import org.junit.Test;

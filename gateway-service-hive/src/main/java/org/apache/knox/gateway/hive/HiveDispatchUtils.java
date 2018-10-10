@@ -17,22 +17,32 @@
  */
 package org.apache.knox.gateway.hive;
 
+import org.apache.hc.client5.http.auth.AuthenticationException;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.core5.http.ClassicHttpRequest;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.protocol.BasicHttpContext;
 import org.apache.knox.gateway.security.SubjectUtils;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.http.impl.auth.BasicScheme;
 
-public class HiveDispatchUtils {
+class HiveDispatchUtils {
 
-  private static final String PASSWORD_PLACEHOLDER = "*";
+  private static final char[] PASSWORD_PLACEHOLDER = "*".toCharArray();
 
-  public static void addCredentialsToRequest(HttpUriRequest request) {
+  static void addCredentialsToRequest(ClassicHttpRequest request) {
     String principal = SubjectUtils.getCurrentEffectivePrincipalName();
     if ( principal != null ) {
       UsernamePasswordCredentials credentials =
           new UsernamePasswordCredentials(principal, PASSWORD_PLACEHOLDER);
-      request.addHeader(BasicScheme.authenticate(credentials, "US-ASCII", false));
+      BasicScheme basicScheme = new BasicScheme();
+      basicScheme.initPreemptive(credentials);
+      try {
+        String authorizationHeaderContent = basicScheme.generateAuthResponse(null, request, new BasicHttpContext());
+        request.addHeader(new BasicHeader(HttpHeaders.AUTHORIZATION, authorizationHeaderContent, true));
+      } catch (AuthenticationException e) {
+        // not possible
+      }
     }
   }
-
 }
