@@ -36,12 +36,12 @@ import org.apache.knox.gateway.services.ServiceLifecycleException;
 import org.apache.knox.gateway.services.security.KeystoreServiceException;
 
 public class CMFKeystoreService extends BaseKeystoreService {
-  private static GatewaySpiMessages LOG = MessagesFactory.get( GatewaySpiMessages.class );
+  private static final GatewaySpiMessages LOG = MessagesFactory.get( GatewaySpiMessages.class );
 
   private static final String TEST_CERT_DN = "CN=hadoop,OU=Test,O=Hadoop,L=Test,ST=Test,C=US";
   private static final String CREDENTIALS_SUFFIX = "-credentials.jceks";
 
-  private String serviceName = null;
+  private String serviceName;
   
   public CMFKeystoreService(String keystoreDir, String serviceName)
       throws ServiceLifecycleException {
@@ -55,12 +55,12 @@ public class CMFKeystoreService extends BaseKeystoreService {
 
   public void createKeystore() throws KeystoreServiceException {
     String filename = keyStoreDir + serviceName + ".jks";
-    createKeystore(filename, "JKS");
+    createKeystore(filename, KEYSTORE_TYPE);
   }
 
   public KeyStore getKeystore() throws KeystoreServiceException {
     final File  keyStoreFile = new File( keyStoreDir + serviceName  );
-    return getKeystore(keyStoreFile, "JKS");
+    return getKeystore(keyStoreFile, KEYSTORE_TYPE);
   }
   
   public void addSelfSignedCert(String alias, char[] passphrase)
@@ -69,12 +69,12 @@ public class CMFKeystoreService extends BaseKeystoreService {
     try {
       keyPairGenerator = KeyPairGenerator.getInstance("RSA");
       keyPairGenerator.initialize(1024);  
-      KeyPair KPair = keyPairGenerator.generateKeyPair();
-      X509Certificate cert = X509CertificateUtil.generateCertificate(TEST_CERT_DN, KPair, 365, "SHA1withRSA");
+      KeyPair keyPair = keyPairGenerator.generateKeyPair();
+      X509Certificate cert = X509CertificateUtil.generateCertificate(TEST_CERT_DN, keyPair, 365, "SHA1withRSA");
 
       KeyStore privateKS = getKeystore();
       if (privateKS != null) {
-        privateKS.setKeyEntry(alias, KPair.getPrivate(),  
+        privateKS.setKeyEntry(alias, keyPair.getPrivate(),
           passphrase,  
           new java.security.cert.Certificate[]{cert});  
         writeKeystoreToFile(privateKS, new File( keyStoreDir + serviceName  ));
@@ -88,13 +88,13 @@ public class CMFKeystoreService extends BaseKeystoreService {
   
   public void createCredentialStore() throws KeystoreServiceException {
     String filename = keyStoreDir + serviceName + CREDENTIALS_SUFFIX;
-    createKeystore(filename, "JCEKS");
+    createKeystore(filename, CREDENTIAL_STORE_TYPE);
   }
 
   public boolean isCredentialStoreAvailable() throws KeystoreServiceException {
     final File  keyStoreFile = new File( keyStoreDir + serviceName + CREDENTIALS_SUFFIX  );
     try {
-      return isKeystoreAvailable(keyStoreFile, "JCEKS");
+      return isKeystoreAvailable(keyStoreFile, CREDENTIAL_STORE_TYPE);
     } catch (KeyStoreException | IOException e) {
       throw new KeystoreServiceException(e);
     }
@@ -103,7 +103,7 @@ public class CMFKeystoreService extends BaseKeystoreService {
   public boolean isKeystoreAvailable() throws KeystoreServiceException {
     final File  keyStoreFile = new File( keyStoreDir + serviceName + ".jks" );
     try {
-      return isKeystoreAvailable(keyStoreFile, "JKS");
+      return isKeystoreAvailable(keyStoreFile, KEYSTORE_TYPE);
     } catch (KeyStoreException | IOException e) {
       throw new KeystoreServiceException(e);
     }
@@ -124,7 +124,7 @@ public class CMFKeystoreService extends BaseKeystoreService {
   
   public KeyStore getCredentialStore() throws KeystoreServiceException {
     final File  keyStoreFile = new File( keyStoreDir + serviceName + CREDENTIALS_SUFFIX  );
-    return getKeystore(keyStoreFile, "JCEKS");
+    return getKeystore(keyStoreFile, CREDENTIAL_STORE_TYPE);
   }
 
   public void addCredential(String alias, String value) throws KeystoreServiceException {
