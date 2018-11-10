@@ -17,21 +17,16 @@
  */
 package org.apache.knox.gateway.audit.log4j.correlation;
 
-import java.io.Externalizable;
-import java.io.IOException;
-import java.io.ObjectInput;
-import java.io.ObjectOutput;
-
 import org.apache.knox.gateway.audit.api.CorrelationContext;
 
-public class Log4jCorrelationContext implements Externalizable, CorrelationContext {
-
-  private byte versionUID = 1;
+public class Log4jCorrelationContext implements CorrelationContext {
+  
   private String requestId;
   private String parentRequestId;
   private String rootRequestId;
 
   public Log4jCorrelationContext() {
+    
   }
 
   public Log4jCorrelationContext( String requestId, String parentRequestId,
@@ -80,22 +75,6 @@ public class Log4jCorrelationContext implements Externalizable, CorrelationConte
     sb.append( ", root_request_id=" ).append( rootRequestId );
     sb.append( "]" );
     return sb.toString();
-  }
-
-  @Override
-  public void writeExternal(ObjectOutput out) throws IOException {
-    out.writeByte( versionUID );
-    out.writeObject( requestId );
-    out.writeObject( parentRequestId );
-    out.writeObject( rootRequestId );
-  }
-
-  @Override
-  public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
-    versionUID = in.readByte();
-    requestId = (String)in.readObject();
-    parentRequestId = (String)in.readObject();
-    rootRequestId = (String)in.readObject();
   }
 
   @Override

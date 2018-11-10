@@ -49,6 +49,7 @@ public class HBaseZookeeperURLManagerTest {
 
   @Before
   public void setup() throws Exception {
+    System.setProperty("zookeeper.jmx.log4j.disable", "true");
     cluster = new TestingCluster(3);
     cluster.start();
   }

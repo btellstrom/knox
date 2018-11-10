@@ -37,14 +37,14 @@ import org.apache.knox.gateway.services.topology.TopologyService;
 import org.apache.knox.test.TestUtils;
 import org.apache.knox.test.mock.MockServer;
 import org.apache.http.HttpStatus;
-import org.apache.log4j.Appender;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.Appender;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.knox.test.TestUtils.LOG_ENTER;
@@ -62,7 +62,7 @@ import static uk.co.datumedge.hamcrest.json.SameJSONAs.sameJSONAs;
 
 public class GatewayAppFuncTest {
 
-  private static Logger LOG = LoggerFactory.getLogger( GatewayAppFuncTest.class );
+  private static Logger LOG = LogManager.getLogger( GatewayAppFuncTest.class );
   private static Class<?> DAT = GatewayAppFuncTest.class;
 
   private static Enumeration<Appender> appenders;

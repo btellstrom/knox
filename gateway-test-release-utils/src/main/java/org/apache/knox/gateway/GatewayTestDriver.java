@@ -44,11 +44,11 @@ import org.apache.knox.gateway.security.ldap.SimpleLdapDirectoryServer;
 import org.apache.knox.gateway.services.DefaultGatewayServices;
 import org.apache.knox.gateway.services.ServiceLifecycleException;
 import org.apache.knox.test.mock.MockServer;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.mycila.xmltool.XMLTag;
 
@@ -62,7 +62,7 @@ import com.mycila.xmltool.XMLTag;
  */
 public class GatewayTestDriver {
 
-  private static Logger log = LoggerFactory.getLogger( GatewayTestDriver.class );
+  private static Logger log = LogManager.getLogger( GatewayTestDriver.class );
 
   public Class<?> resourceBaseClass;
   public Map<String,Service> services = new HashMap<>();

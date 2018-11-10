@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -47,8 +46,6 @@ import org.apache.knox.gateway.topology.Service;
 import org.apache.knox.gateway.topology.Topology;
 import org.apache.knox.gateway.util.XmlUtils;
 import org.apache.knox.test.TestUtils;
-import org.apache.knox.test.log.NoOpAppender;
-import org.apache.log4j.Appender;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePath;
 import org.jboss.shrinkwrap.api.spec.EnterpriseArchive;
@@ -191,14 +188,11 @@ public class DeploymentFactoryFuncTest {
     provider.addParam( param );
     topology.addProvider( provider );
 
-    Enumeration<Appender> appenders = NoOpAppender.setUp();
     try {
       DeploymentFactory.createDeployment( config, topology );
       fail( "Should have throws IllegalArgumentException" );
     } catch ( DeploymentException e ) {
       // Expected.
-    } finally {
-      NoOpAppender.tearDown( appenders );
     }
     LOG_EXIT();
   }

@@ -25,7 +25,6 @@ import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -62,15 +61,14 @@ import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
-import org.apache.log4j.Appender;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static org.apache.knox.test.TestUtils.LOG_ENTER;
 import static org.apache.knox.test.TestUtils.LOG_EXIT;
@@ -83,10 +81,9 @@ import static org.xmlmatchers.xpath.HasXPath.hasXPath;
 @Category( ReleaseTest.class )
 public class GatewaySslFuncTest {
 
-  private static Logger LOG = LoggerFactory.getLogger( GatewaySslFuncTest.class );
+  private static Logger LOG = LogManager.getLogger( GatewaySslFuncTest.class );
   private static Class<?> DAT = GatewaySslFuncTest.class;
 
-  private static Enumeration<Appender> appenders;
   private static GatewayTestConfig config;
   private static DefaultGatewayServices services;
   private static GatewayServer gateway;
@@ -101,7 +98,6 @@ public class GatewaySslFuncTest {
   @BeforeClass
   public static void setupSuite() throws Exception {
     LOG_ENTER();
-    //appenders = NoOpAppender.setUp();
     driver.setupLdap(0);
     setupGateway();
     LOG_EXIT();
@@ -113,7 +109,6 @@ public class GatewaySslFuncTest {
     gateway.stop();
     driver.cleanup();
     FileUtils.deleteQuietly( new File( config.getGatewayHomeDir() ) );
-    //NoOpAppender.tearDown( appenders );
     LOG_EXIT();
   }
 

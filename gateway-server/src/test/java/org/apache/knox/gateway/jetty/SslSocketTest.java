@@ -24,13 +24,13 @@ import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.knox.test.category.ManualTests;
 import org.apache.knox.test.category.MediumTests;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Server;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
@@ -48,7 +48,7 @@ import java.nio.charset.StandardCharsets;
 @Category( { ManualTests.class, MediumTests.class } )
 public class SslSocketTest {
 
-  Logger log = LoggerFactory.getLogger( SslSocketTest.class );
+  Logger log = LogManager.getLogger( SslSocketTest.class );
 
   private Server jetty;
 

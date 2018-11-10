@@ -41,19 +41,17 @@ import org.apache.knox.gateway.services.topology.TopologyService;
 import org.apache.knox.test.TestUtils;
 import org.apache.knox.test.category.ReleaseTest;
 import org.apache.knox.test.mock.MockServer;
-import org.apache.log4j.Appender;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.hamcrest.MatcherAssert;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -73,10 +71,9 @@ import static org.xmlmatchers.transform.XmlConverters.the;
 @Category(ReleaseTest.class)
 public class GatewayMultiFuncTest {
 
-  private static Logger LOG = LoggerFactory.getLogger( GatewayMultiFuncTest.class );
+  private static Logger LOG = LogManager.getLogger( GatewayMultiFuncTest.class );
   private static Class<?> DAT = GatewayMultiFuncTest.class;
 
-  private static Enumeration<Appender> appenders;
   private static GatewayTestConfig config;
   private static DefaultGatewayServices services;
   private static GatewayServer gateway;
@@ -90,7 +87,6 @@ public class GatewayMultiFuncTest {
   @BeforeClass
   public static void setupSuite() throws Exception {
     LOG_ENTER();
-    //appenders = NoOpAppender.setUp();
     driver.setupLdap(0);
     setupGateway();
     LOG_EXIT();

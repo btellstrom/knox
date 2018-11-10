@@ -26,13 +26,13 @@ import org.apache.http.HttpStatus;
 import org.apache.knox.test.TestUtils;
 import org.apache.knox.test.category.MediumTests;
 import org.apache.knox.test.category.VerifyTest;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static io.restassured.RestAssured.given;
 import static org.apache.knox.test.TestUtils.LOG_ENTER;
@@ -49,7 +49,7 @@ public class GatewayUIFuncTest {
 //    System.in.read();
 //  }
 
-  private static Logger log = LoggerFactory.getLogger( GatewayUIFuncTest.class );
+  private static Logger log = LogManager.getLogger( GatewayUIFuncTest.class );
 
   private static GatewayTestDriver driver = new GatewayTestDriver();
 

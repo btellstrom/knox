@@ -50,6 +50,8 @@ import org.apache.knox.test.TestUtils;
 import org.apache.knox.test.category.MediumTests;
 import org.apache.knox.test.category.VerifyTest;
 import org.apache.knox.test.mock.MockRequestMatcher;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.velocity.Template;
 import org.apache.velocity.VelocityContext;
 import org.apache.velocity.app.VelocityEngine;
@@ -66,8 +68,6 @@ import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.experimental.categories.Category;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import java.io.ByteArrayOutputStream;
@@ -116,7 +116,7 @@ public class GatewayBasicFuncTest {
 //    System.in.read();
 //  }
 
-  private static Logger log = LoggerFactory.getLogger( GatewayBasicFuncTest.class );
+  private static Logger log = LogManager.getLogger( GatewayBasicFuncTest.class );
 
   private static GatewayTestDriver driver = new GatewayTestDriver();
 

@@ -36,7 +36,6 @@ import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.security.UserGroupInformation;
 import org.apache.hadoop.security.ssl.KeyStoreTestUtil;
 import org.apache.knox.test.TestUtils;
-import org.apache.log4j.PropertyConfigurator;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -99,7 +98,6 @@ public class ShellTest {
   }
 
   private void testPutGetScript(String script) throws IOException, URISyntaxException {
-    setupLogging();
     DistributedFileSystem fileSystem = miniDFSCluster.getFileSystem();
     Path dir = new Path("/user/guest/example");
     fileSystem.delete(dir, true);
@@ -125,10 +123,6 @@ public class ShellTest {
   @Test
   public void basicSecureShell() throws Exception {
     testPutGetScript("WebHdfsPutGet.groovy");
-  }
-
-  private static void setupLogging() {
-    PropertyConfigurator.configure(ClassLoader.getSystemResource("log4j.properties"));
   }
 
   /**

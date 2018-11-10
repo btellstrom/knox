@@ -23,8 +23,6 @@ import org.apache.knox.gateway.services.DefaultGatewayServices;
 import org.apache.knox.gateway.services.ServiceLifecycleException;
 import org.apache.knox.gateway.util.KnoxCLI;
 import org.apache.knox.test.TestUtils;
-import org.apache.knox.test.log.NoOpAppender;
-import org.apache.log4j.Appender;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -34,7 +32,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -45,8 +42,6 @@ import static org.hamcrest.CoreMatchers.containsString;
 import static org.junit.Assert.assertThat;
 
 public class KnoxCliSysBindTest {
-
-  public static Enumeration<Appender> appenders;
   public static GatewayTestConfig config;
   public static GatewayServer gateway;
   public static String gatewayUrl;
@@ -71,9 +66,6 @@ public class KnoxCliSysBindTest {
   public static void cleanupSuite() throws Exception {
     LOG_ENTER();
     driver.cleanup();
-
-    //FileUtils.deleteQuietly( new File( config.getGatewayHomeDir() ) );
-    //NoOpAppender.tearDown( appenders );
     LOG_EXIT();
   }
 
@@ -254,12 +246,7 @@ public class KnoxCliSysBindTest {
     String[] args3 = { "system-user-auth-test", "--master", "knox", "--cluster", "test-cluster-3", "--d" };
     cli = new KnoxCLI();
     cli.setConf(config);
-    Enumeration<Appender> before = NoOpAppender.setUp();
-    try {
-      cli.run( args3 );
-    } finally {
-      NoOpAppender.tearDown( before );
-    }
+    cli.run( args3 );
     assertThat(outContent.toString(StandardCharsets.UTF_8.name()), containsString("LDAP authentication failed"));
     assertThat(outContent.toString(StandardCharsets.UTF_8.name()), containsString("Unable to successfully bind to LDAP server with topology credentials"));
 

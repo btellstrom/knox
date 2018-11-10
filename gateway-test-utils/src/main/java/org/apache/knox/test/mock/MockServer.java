@@ -17,12 +17,12 @@
  */
 package org.apache.knox.test.mock;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.Servlet;
 import java.util.LinkedList;
@@ -45,7 +45,7 @@ import java.util.Queue;
  */
 public class MockServer {
 
-  private Logger log = LoggerFactory.getLogger( this.getClass() );
+  private Logger log = LogManager.getLogger( this.getClass() );
 
   private String name;
   private Server jetty;

@@ -6,9 +6,9 @@
  * to you under the Apache License, Version 2.0 (the
  * "License"); you may not use this file except in compliance
  * with the License.  You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,55 +17,81 @@
  */
 package org.apache.knox.gateway.audit.log4j.correlation;
 
+import org.apache.knox.gateway.audit.api.CorrelationContext;
+import org.apache.knox.gateway.audit.api.CorrelationService;
+import org.apache.logging.log4j.ThreadContext;
+import org.apache.logging.log4j.core.LogEvent;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
-import org.apache.knox.gateway.audit.api.CorrelationContext;
-import org.apache.knox.gateway.audit.api.CorrelationService;
-import org.apache.log4j.MDC;
-
 public class Log4jCorrelationService implements CorrelationService {
-  
+
   public static final String MDC_CORRELATION_CONTEXT_KEY = "correlation_context";
-  
+
+  public static CorrelationContext createContext(LogEvent event) {
+    if (event == null) {
+      return null;
+    }
+
+    Map<String, String> data = event.getContextData().toMap();
+    return new Log4jCorrelationContext(
+        data.get(MDC_CORRELATION_CONTEXT_KEY + "_requestId"),
+        data.get(MDC_CORRELATION_CONTEXT_KEY + "_parentRequestId"),
+        data.get(MDC_CORRELATION_CONTEXT_KEY + "_rootRequestId")
+    );
+  }
+
   @Override
   public CorrelationContext createContext() {
-    CorrelationContext context = getContext();
-    if ( context == null ) {
-      context = new Log4jCorrelationContext();
-      attachContext( context );
-    }
+    Log4jCorrelationContext context = new Log4jCorrelationContext();
+    attachContext(context);
     return context;
   }
 
   @Override
   public CorrelationContext getContext() {
-    return (CorrelationContext) MDC.get( MDC_CORRELATION_CONTEXT_KEY );
+    if (ThreadContext.get(MDC_CORRELATION_CONTEXT_KEY) == null) {
+      return null;
+    }
+
+    return new Log4jCorrelationContext(
+        ThreadContext.get(MDC_CORRELATION_CONTEXT_KEY + "_requestId"),
+        ThreadContext.get(MDC_CORRELATION_CONTEXT_KEY + "_parentRequestId"),
+        ThreadContext.get(MDC_CORRELATION_CONTEXT_KEY + "_rootRequestId")
+    );
   }
 
   @Override
-  public void attachContext( CorrelationContext context ) {
-    if ( context != null ) {
-      MDC.put( MDC_CORRELATION_CONTEXT_KEY, context );
+  public void attachContext(CorrelationContext context) {
+    if (context != null) {
+      ThreadContext.put(MDC_CORRELATION_CONTEXT_KEY, "true");
+      ThreadContext.put(MDC_CORRELATION_CONTEXT_KEY + "_requestId", context.getRequestId());
+      ThreadContext.put(MDC_CORRELATION_CONTEXT_KEY + "_parentRequestId", context.getParentRequestId());
+      ThreadContext.put(MDC_CORRELATION_CONTEXT_KEY + "_rootRequestId", context.getRootRequestId());
     }
   }
 
   @Override
   public CorrelationContext detachContext() {
-    CorrelationContext context = (CorrelationContext) MDC.get( MDC_CORRELATION_CONTEXT_KEY );
-    MDC.remove( MDC_CORRELATION_CONTEXT_KEY );
+    CorrelationContext context = getContext();
+    ThreadContext.remove(MDC_CORRELATION_CONTEXT_KEY);
+    ThreadContext.remove(MDC_CORRELATION_CONTEXT_KEY + "_requestId");
+    ThreadContext.remove(MDC_CORRELATION_CONTEXT_KEY + "_parentRequestId");
+    ThreadContext.remove(MDC_CORRELATION_CONTEXT_KEY + "_rootRequestId");
     return context;
   }
-  
+
   @Override
-  public <T> T execute( CorrelationContext context, Callable<T> callable ) throws Exception {
+  public <T> T execute(CorrelationContext context, Callable<T> callable) throws Exception {
     try {
-      attachContext( context );
+      attachContext(context);
       return callable.call();
     } finally {
       detachContext();
@@ -74,8 +100,8 @@ public class Log4jCorrelationService implements CorrelationService {
 
   @Override
   public CorrelationContext attachExternalizedContext(byte[] externalizedContext) {
-    CorrelationContext context = readExternalizedContext( externalizedContext );
-    attachContext( context );
+    CorrelationContext context = readExternalizedContext(externalizedContext);
+    attachContext(context);
     return context;
   }
 
@@ -88,24 +114,24 @@ public class Log4jCorrelationService implements CorrelationService {
 
   @Override
   public CorrelationContext readExternalizedContext(byte[] externalizedContext) {
-    ByteArrayInputStream bais = new ByteArrayInputStream( externalizedContext );
+    ByteArrayInputStream bais = new ByteArrayInputStream(externalizedContext);
     ObjectInput oi = null;
     CorrelationContext context = null;
     try {
-      oi = new ObjectInputStream( bais );
+      oi = new ObjectInputStream(bais);
       context = (CorrelationContext) oi.readObject();
-    } catch ( IOException e ) {
-      throw new IllegalArgumentException( e );
-    } catch ( ClassNotFoundException e ) {
-      throw new IllegalArgumentException( e );
+    } catch (IOException e) {
+      throw new IllegalArgumentException(e);
+    } catch (ClassNotFoundException e) {
+      throw new IllegalArgumentException(e);
     } finally {
       try {
         bais.close();
-        if ( oi != null) {
+        if (oi != null) {
           oi.close();
         }
-      } catch ( IOException e ) {
-        throw new IllegalArgumentException( e );
+      } catch (IOException e) {
+        throw new IllegalArgumentException(e);
       }
     }
     return context;
@@ -115,14 +141,14 @@ public class Log4jCorrelationService implements CorrelationService {
   public byte[] getExternalizedContext() {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     try {
-    ObjectOutputStream oos = new ObjectOutputStream( baos );
-    oos.writeObject( getContext() );
-    oos.close();
-    } catch ( IOException e ) {
-      throw new RuntimeException( e );
+      ObjectOutputStream oos = new ObjectOutputStream(baos);
+      oos.writeObject(getContext());
+      oos.close();
+    } catch (IOException e) {
+      throw new RuntimeException(e);
     }
     return baos.toByteArray();
   }
-  
+
 }
 
