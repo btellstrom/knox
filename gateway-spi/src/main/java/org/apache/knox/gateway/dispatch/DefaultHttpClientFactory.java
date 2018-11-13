@@ -27,6 +27,8 @@ import java.util.List;
 import javax.net.ssl.SSLContext;
 import javax.servlet.FilterConfig;
 
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.knox.gateway.services.security.AliasService;
 import org.apache.knox.gateway.services.security.AliasServiceException;
 import org.apache.knox.gateway.services.security.KeystoreService;
@@ -50,7 +52,6 @@ import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
-import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.conn.ssl.TrustSelfSignedStrategy;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.DefaultConnectionReuseStrategy;
@@ -68,43 +69,23 @@ public class DefaultHttpClientFactory implements HttpClientFactory {
 
   @Override
   public HttpClient createHttpClient(FilterConfig filterConfig) {
-    HttpClientBuilder builder = null;
+    HttpClientBuilder builder;
     GatewayConfig gatewayConfig = (GatewayConfig) filterConfig.getServletContext().getAttribute(GatewayConfig.GATEWAY_CONFIG_ATTRIBUTE);
     GatewayServices services = (GatewayServices) filterConfig.getServletContext()
         .getAttribute(GatewayServices.GATEWAY_SERVICES_ATTRIBUTE);
+    ConnectionManagerBuilder connectionManagerBuilder;
     if (gatewayConfig != null && gatewayConfig.isMetricsEnabled()) {
       MetricsService metricsService = services.getService(GatewayServices.METRICS_SERVICE);
       builder = metricsService.getInstrumented(HttpClientBuilder.class);
+      connectionManagerBuilder = metricsService.getInstrumented(ConnectionManagerBuilder.class);
     } else {
       builder = HttpClients.custom();
+      connectionManagerBuilder = new DefaultConnectionManagerBuilder();
     }
-    if (Boolean.parseBoolean(filterConfig.getInitParameter("useTwoWaySsl"))) {
-      char[] keypass = null;
-      MasterService ms = services.getService("MasterService");
-      AliasService as = services.getService(GatewayServices.ALIAS_SERVICE);
-      try {
-        keypass = as.getGatewayIdentityPassphrase();
-      } catch (AliasServiceException e) {
-        // nop - default passphrase will be used
-      }
-      if (keypass == null) {
-        // there has been no alias created for the key - let's assume it is the same as the keystore password
-        keypass = ms.getMasterSecret();
-      }
+    PoolingHttpClientConnectionManager connectionManager = getConnectionManager(connectionManagerBuilder,
+        filterConfig, services);
+    builder.setConnectionManager(connectionManager);
 
-      KeystoreService ks = services.getService(GatewayServices.KEYSTORE_SERVICE);
-      final SSLContext sslcontext;
-      try {
-        KeyStore keystoreForGateway = ks.getKeystoreForGateway();
-        sslcontext = SSLContexts.custom()
-            .loadTrustMaterial(keystoreForGateway, new TrustSelfSignedStrategy())
-            .loadKeyMaterial(keystoreForGateway, keypass)
-            .build();
-      } catch (Exception e) {
-        throw new IllegalArgumentException("Unable to create SSLContext", e);
-      }
-      builder.setSSLSocketFactory(new SSLConnectionSocketFactory(sslcontext));
-    }
     if ( "true".equals(System.getProperty(GatewayConfig.HADOOP_KERBEROS_SECURED)) ) {
       CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
       credentialsProvider.setCredentials(AuthScope.ANY, new UseJaasCredentials());
@@ -125,16 +106,53 @@ public class DefaultHttpClientFactory implements HttpClientFactory {
     builder.setRedirectStrategy( new NeverRedirectStrategy() );
     builder.setRetryHandler( new NeverRetryHandler() );
 
-    int maxConnections = getMaxConnections( filterConfig );
-    builder.setMaxConnTotal( maxConnections );
-    builder.setMaxConnPerRoute( maxConnections );
-
     builder.setDefaultRequestConfig( getRequestConfig( filterConfig ) );
 
     // See KNOX-1530 for details
     builder.disableContentCompression();
 
     return builder.build();
+  }
+
+  private PoolingHttpClientConnectionManager getConnectionManager(ConnectionManagerBuilder connectionManagerBuilder,
+                                                                  FilterConfig filterConfig, GatewayServices services) {
+    String topologyName = String.valueOf(filterConfig.getServletContext().getAttribute(GatewayServices.GATEWAY_CLUSTER_ATTRIBUTE));
+    connectionManagerBuilder.setName(topologyName);
+
+    if (Boolean.parseBoolean(filterConfig.getInitParameter("useTwoWaySsl"))) {
+      char[] keypass = null;
+      MasterService ms = services.getService("MasterService");
+      AliasService as = services.getService(GatewayServices.ALIAS_SERVICE);
+      try {
+        keypass = as.getGatewayIdentityPassphrase();
+      } catch (AliasServiceException e) {
+        // nop - default passphrase will be used
+      }
+      if (keypass == null) {
+        // there has been no alias created for the key - let's assume it is the same as the keystore password
+        keypass = ms.getMasterSecret();
+      }
+
+      KeystoreService ks = services.getService(GatewayServices.KEYSTORE_SERVICE);
+      final SSLContext sslcontext;
+      try {
+        KeyStore keystoreForGateway = ks.getKeystoreForGateway();
+        sslcontext = SSLContexts.custom()
+                         .loadTrustMaterial(keystoreForGateway, new TrustSelfSignedStrategy())
+                         .loadKeyMaterial(keystoreForGateway, keypass)
+                         .build();
+      } catch (Exception e) {
+        throw new IllegalArgumentException("Unable to create SSLContext", e);
+      }
+      connectionManagerBuilder.setSSLSocketFactory(new SSLConnectionSocketFactory(sslcontext));
+    }
+
+    PoolingHttpClientConnectionManager connectionManager = connectionManagerBuilder.build();
+    int maxConnections = getMaxConnections( filterConfig );
+    connectionManager.setMaxTotal( maxConnections );
+    connectionManager.setDefaultMaxPerRoute( maxConnections );
+
+    return connectionManager;
   }
 
   private static RequestConfig getRequestConfig( FilterConfig config ) {
