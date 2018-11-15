@@ -16,32 +16,7 @@
  */
 package org.apache.hadoop.gateway.hdfs.dispatch;
 
-import org.apache.http.HttpEntity;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import java.io.IOException;
-
 @Deprecated
 public class HdfsHttpClientDispatch extends org.apache.knox.gateway.hdfs.dispatch.HdfsHttpClientDispatch {
-
-  public HdfsHttpClientDispatch() throws ServletException {
-    super();
-  }
-
-  //@Override
-  /**
-   * This method ensures that the request InputStream is not acquired
-   * prior to a dispatch to a component such as a namenode that doesn't
-   * the request body. The side effect of this is that the client does
-   * not get a 100 continue from Knox which will trigger the client to
-   * send the entire payload before redirect to the target component
-   * like a datanode and have to send it again.
-   */
-  @Override
-  protected HttpEntity createRequestEntity(HttpServletRequest request)
-      throws IOException {
-    return super.createRequestEntity(request);
-  }
 
 }

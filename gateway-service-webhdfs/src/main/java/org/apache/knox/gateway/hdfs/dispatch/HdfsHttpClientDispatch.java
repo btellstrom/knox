@@ -20,15 +20,10 @@ package org.apache.knox.gateway.hdfs.dispatch;
 import org.apache.knox.gateway.dispatch.DefaultDispatch;
 import org.apache.http.HttpEntity;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 public class HdfsHttpClientDispatch extends DefaultDispatch {
-
-  public HdfsHttpClientDispatch() throws ServletException {
-    super();
-  }
 
   //@Override
   /**

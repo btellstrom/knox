@@ -19,8 +19,6 @@ package org.apache.hadoop.gateway.shirorealm;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
 import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authz.AuthorizationInfo;
-import org.apache.shiro.subject.PrincipalCollection;
 
 /**
  * An adapter class that delegate calls to {@link org.apache.knox.gateway.shirorealm.KnoxPamRealm}
@@ -32,26 +30,9 @@ import org.apache.shiro.subject.PrincipalCollection;
  * @since 1.0.0
  */
 @Deprecated
-public class KnoxPamRealm
-    extends org.apache.knox.gateway.shirorealm.KnoxPamRealm {
-
-  /**
-   * Create an instance
-   */
-  public KnoxPamRealm() {
-    super();
-  }
-
-
+public class KnoxPamRealm extends org.apache.knox.gateway.shirorealm.KnoxPamRealm {
   @Override
-  protected AuthenticationInfo doGetAuthenticationInfo(
-      AuthenticationToken token) throws AuthenticationException {
+  protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
     return super.doGetAuthenticationInfo(token);
-  }
-
-  @Override
-  protected AuthorizationInfo doGetAuthorizationInfo(
-      PrincipalCollection principals) {
-    return super.doGetAuthorizationInfo(principals);
   }
 }

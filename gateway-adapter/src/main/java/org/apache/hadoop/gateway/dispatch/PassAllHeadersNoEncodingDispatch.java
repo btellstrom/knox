@@ -16,13 +16,6 @@
  */
 package org.apache.hadoop.gateway.dispatch;
 
-import javax.servlet.http.HttpServletRequest;
-import java.net.URI;
-
 @Deprecated
 public class PassAllHeadersNoEncodingDispatch extends org.apache.knox.gateway.dispatch.PassAllHeadersNoEncodingDispatch {
-  @Override
-  public URI getDispatchUrl(HttpServletRequest request) {
-    return super.getDispatchUrl(request);
-  }
 }

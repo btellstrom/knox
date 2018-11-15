@@ -16,16 +16,7 @@
  */
 package org.apache.hadoop.gateway.hadoopauth.filter;
 
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import java.util.Properties;
-
 @Deprecated
 public class HadoopAuthFilter extends org.apache.knox.gateway.hadoopauth.filter.HadoopAuthFilter {
 
-  @Override
-  protected Properties getConfiguration(String configPrefix,
-      FilterConfig filterConfig) throws ServletException {
-    return super.getConfiguration(configPrefix, filterConfig);
-  }
 }

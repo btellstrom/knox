@@ -16,62 +16,7 @@
  */
 package org.apache.hadoop.gateway.provider.federation.jwt.filter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.FilterConfig;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @Deprecated
 public class SSOCookieFederationFilter extends org.apache.knox.gateway.provider.federation.jwt.filter.SSOCookieFederationFilter {
 
-  @Override
-  public void init(FilterConfig filterConfig) throws ServletException {
-    super.init(filterConfig);
-  }
-
-  @Override
-  public void destroy() {
-    super.destroy();
-  }
-
-  @Override
-  public void doFilter(ServletRequest request, ServletResponse response,
-      FilterChain chain) throws IOException, ServletException {
-    super.doFilter(request, response, chain);
-  }
-
-  @Override
-  protected void handleValidationError(HttpServletRequest request,
-      HttpServletResponse response, int status, String error)
-      throws IOException {
-    super.handleValidationError(request, response, status, error);
-  }
-
-  /**
-   * Encapsulate the acquisition of the JWT token from HTTP cookies within the
-   * request.
-   *
-   * @param req servlet request to get the JWT token from
-   * @return serialized JWT token
-   */
-  @Override
-  protected String getJWTFromCookie(HttpServletRequest req) {
-    return super.getJWTFromCookie(req);
-  }
-
-  /**
-   * Create the URL to be used for authentication of the user in the absence of
-   * a JWT token within the incoming request.
-   *
-   * @param request for getting the original request URL
-   * @return url to use as login url for redirect
-   */
-  @Override
-  protected String constructLoginURL(HttpServletRequest request) {
-    return super.constructLoginURL(request);
-  }
 }

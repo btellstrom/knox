@@ -16,22 +16,7 @@
  */
 package org.apache.hadoop.gateway.dispatch;
 
-import java.util.Set;
-
 @Deprecated
 public class PassAllHeadersDispatch extends org.apache.knox.gateway.dispatch.PassAllHeadersDispatch{
-  @Override
-  public void init() {
-    super.init();
-  }
 
-  @Override
-  public Set<String> getOutboundResponseExcludeHeaders() {
-    return super.getOutboundResponseExcludeHeaders();
-  }
-
-  @Override
-  public Set<String> getOutboundRequestExcludeHeaders() {
-    return super.getOutboundRequestExcludeHeaders();
-  }
 }

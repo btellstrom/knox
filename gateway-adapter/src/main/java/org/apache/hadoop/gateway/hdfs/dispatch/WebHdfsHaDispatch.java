@@ -16,49 +16,7 @@
  */
 package org.apache.hadoop.gateway.hdfs.dispatch;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.methods.HttpUriRequest;
-import org.apache.knox.gateway.ha.provider.HaProvider;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-
 @Deprecated
 public class WebHdfsHaDispatch extends org.apache.knox.gateway.hdfs.dispatch.WebHdfsHaDispatch {
 
-  public WebHdfsHaDispatch() throws ServletException {
-    super();
-  }
-
-  @Override
-  public void init() {
-    super.init();
-  }
-
-  @Override
-  public HaProvider getHaProvider() {
-    return super.getHaProvider();
-  }
-
-  @Override
-  public void setHaProvider(HaProvider haProvider) {
-    super.setHaProvider(haProvider);
-  }
-
-  @Override
-  protected void executeRequest(HttpUriRequest outboundRequest,
-      HttpServletRequest inboundRequest, HttpServletResponse outboundResponse)
-      throws IOException {
-    super.executeRequest(outboundRequest, inboundRequest, outboundResponse);
-  }
-
-  @Override
-  protected void writeOutboundResponse(HttpUriRequest outboundRequest,
-      HttpServletRequest inboundRequest, HttpServletResponse outboundResponse,
-      HttpResponse inboundResponse) throws IOException {
-    super.writeOutboundResponse(outboundRequest, inboundRequest,
-        outboundResponse, inboundResponse);
-  }
 }

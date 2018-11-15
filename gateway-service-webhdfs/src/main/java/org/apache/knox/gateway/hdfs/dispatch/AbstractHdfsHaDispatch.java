@@ -29,7 +29,6 @@ import org.apache.knox.gateway.ha.provider.impl.HaServiceConfigConstants;
 import org.apache.knox.gateway.hdfs.i18n.WebHdfsMessages;
 import org.apache.knox.gateway.i18n.messages.MessagesFactory;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.ByteArrayOutputStream;
@@ -45,10 +44,6 @@ public abstract class AbstractHdfsHaDispatch extends HdfsHttpClientDispatch {
   private int maxFailoverAttempts = HaServiceConfigConstants.DEFAULT_MAX_FAILOVER_ATTEMPTS;
   private int failoverSleep = HaServiceConfigConstants.DEFAULT_FAILOVER_SLEEP;
   private HaProvider haProvider;
-
-  public AbstractHdfsHaDispatch() throws ServletException {
-    super();
-  }
 
   @Override
   public void init() {

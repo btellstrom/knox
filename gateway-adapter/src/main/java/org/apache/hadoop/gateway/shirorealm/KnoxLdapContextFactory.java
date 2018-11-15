@@ -16,10 +16,6 @@
  */
 package org.apache.hadoop.gateway.shirorealm;
 
-import javax.naming.NamingException;
-import javax.naming.ldap.LdapContext;
-import java.util.Hashtable;
-
 /**
  * An adapter class that delegate calls to {@link org.apache.knox.gateway.shirorealm.KnoxLdapContextFactory}
  * for backwards compatability with package structure.
@@ -31,18 +27,5 @@ import java.util.Hashtable;
  */
 @Deprecated
 public class KnoxLdapContextFactory extends org.apache.knox.gateway.shirorealm.KnoxLdapContextFactory {
-
-  /**
-   * Create an instance
-   */
-  public KnoxLdapContextFactory() {
-    super();
-  }
-
-  @Override
-  protected LdapContext createLdapContext(Hashtable env)
-      throws NamingException {
-    return super.createLdapContext(env);
-  }
 
 }

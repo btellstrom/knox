@@ -63,7 +63,7 @@ public class KnoxPamRealmTest {
     assertTrue(authInfo.getCredentials() != null);
   }
 
-  public static void main(String[] args) throws Exception {
+  public static void main(String[] args) {
     KnoxPamRealmTest pamTest = new KnoxPamRealmTest();
     pamTest.testDoGetAuthenticationInfo();
   }
