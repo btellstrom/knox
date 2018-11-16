@@ -32,4 +32,29 @@
   <rule dir="IN" name="LIVYSERVER/livy/path/inbound" pattern="*://*:*/**/livy/{path=**}?{**}">
     <rewrite template="{$serviceUrl[LIVYSERVER]}/{path=**}?{**}"/>
   </rule>
+
+  <filter name="LIVYSERVER/livy/outbound/filter/ui">
+    <content type="*/html">
+      <apply path="/static" rule="LIVYSERVER/livy/outbound/static"/>
+    </content>
+  </filter>
+  <filter name="LIVYSERVER/livy/outbound/filter/static">
+    <content type="*/json">
+      <apply path="/batches" rule="LIVYSERVER/livy/outbound/batches"/>
+      <apply path="/sessions" rule="LIVYSERVER/livy/outbound/sessions"/>
+    </content>
+  </filter>
+
+  <rule dir="OUT" name="LIVYSERVER/livy/outbound/static" pattern="/static/{**}">
+    <rewrite template="{$frontend[url]}/livy/static/{**}"/>
+  </rule>
+
+  <rule dir="OUT" name="LIVYSERVER/livy/outbound/batches">
+    <match pattern="/batches"/>
+    <rewrite template="{$frontend[path]}/batches"/>
+  </rule>
+  <rule dir="OUT" name="LIVYSERVER/livy/outbound/sessions">
+    <match pattern="/sessions"/>
+    <rewrite template="{$frontend[path]}/sessions"/>
+  </rule>
 </rules>

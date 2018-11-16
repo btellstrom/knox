@@ -20,6 +20,12 @@
     <route path="/livy/**?**"/>
     <route path="/livy"/>
     <route path="/livy/"/>
+    <route path="/livy/ui">
+      <rewrite apply="LIVYSERVER/livy/outbound/filter/ui" to="response.body"/>
+    </route>
+    <route path="/livy/static/**">
+      <rewrite apply="LIVYSERVER/livy/outbound/filter/static" to="response.body"/>
+    </route>
   </routes>
   <dispatch classname="org.apache.knox.gateway.livy.LivyDispatch"/>
 </service>
