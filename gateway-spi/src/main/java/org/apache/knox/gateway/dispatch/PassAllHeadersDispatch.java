@@ -24,14 +24,14 @@ import java.util.Set;
 public class PassAllHeadersDispatch extends DefaultDispatch {
 
   private static final Set<String> REQUEST_EXCLUDE_HEADERS = new HashSet<>();
-  
+
   static {
       REQUEST_EXCLUDE_HEADERS.add("Content-Length");
   }
 
   @Override
-  public void init() {
-    super.init();
+  protected void setResponseExcludeHeaders(String headers) {
+    super.setResponseExcludeHeaders(String.join(",", REQUEST_EXCLUDE_HEADERS));
   }
 
   @Override

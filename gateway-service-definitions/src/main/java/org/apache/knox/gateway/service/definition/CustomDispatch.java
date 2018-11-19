@@ -17,8 +17,14 @@
  */
 package org.apache.knox.gateway.service.definition;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 @XmlType(name = "dispatch")
 public class CustomDispatch {
@@ -34,6 +40,9 @@ public class CustomDispatch {
   private String httpClientFactory;
 
   private boolean useTwoWaySsl = false;
+
+  @XmlElement(name = "param")
+  private List<XMLParam> params;
 
   @XmlAttribute(name = "contributor-name")
   public String getContributorName() {
@@ -92,5 +101,32 @@ public class CustomDispatch {
   /* this is used when we use Apache Commons Digestor bindings, see KnoxFormatXmlTopologyRules.configure() */
   public void setUseTwoWaySsl(String useTwoWaySsl) {
     this.useTwoWaySsl = Boolean.parseBoolean(useTwoWaySsl);
+  }
+
+  public Map<String, String> getParams() {
+    Map<String, String> result = new LinkedHashMap<>();
+    if (params != null) {
+      for (XMLParam p : params) {
+        result.put(p.name, p.value);
+      }
+    }
+    return result;
+  }
+
+  @XmlAccessorType(XmlAccessType.NONE)
+  private static class XMLParam {
+    @XmlElement
+    private String name;
+
+    @XmlElement
+    private String value;
+
+    String getName() {
+      return name;
+    }
+
+    String getValue() {
+      return value;
+    }
   }
 }

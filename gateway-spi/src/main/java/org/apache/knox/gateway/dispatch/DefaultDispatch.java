@@ -48,23 +48,29 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
 
 public class DefaultDispatch extends AbstractGatewayDispatch {
 
-  protected static final String SET_COOKIE = "SET-COOKIE";
-  protected static final String WWW_AUTHENTICATE = "WWW-AUTHENTICATE";
+  private static final String SET_COOKIE = "SET-COOKIE";
+  private static final String WWW_AUTHENTICATE = "WWW-AUTHENTICATE";
 
   protected static final SpiGatewayMessages LOG = MessagesFactory.get(SpiGatewayMessages.class);
   protected static final SpiGatewayResources RES = ResourcesFactory.get(SpiGatewayResources.class);
   protected static final Auditor auditor = AuditServiceFactory.getAuditService().getAuditor(AuditConstants.DEFAULT_AUDITOR_NAME,
       AuditConstants.KNOX_SERVICE_NAME, AuditConstants.KNOX_COMPONENT_NAME);
 
-  private Set<String> outboundResponseExcludeHeaders;
+  private Set<String> requestExcludeHeaders;
+  private Set<String> responseExcludeHeaders;
+  private Boolean removeUrlEncoding = false;
 
   //Buffer size in bytes
   private int replayBufferSize = -1;
@@ -72,14 +78,41 @@ public class DefaultDispatch extends AbstractGatewayDispatch {
   @Override
   public void init() {
     super.init();
-    outboundResponseExcludeHeaders = new HashSet<>();
-    outboundResponseExcludeHeaders.add(SET_COOKIE);
-    outboundResponseExcludeHeaders.add(WWW_AUTHENTICATE);
+  }
+
+  private Set<String> handleCommaSeparatedHeaders(String headers) {
+    if(headers != null) {
+      return new HashSet<>(Arrays.asList(headers.split(",")));
+    }
+    return null;
   }
 
   @Override
   public void destroy() {
 
+  }
+
+  @Configure
+  protected void setRequestExcludeHeaders(@Default(" ") String headers) {
+    if(headers.equals(" ")) {
+      this.requestExcludeHeaders = super.getOutboundRequestExcludeHeaders();
+    } else {
+      this.requestExcludeHeaders = handleCommaSeparatedHeaders(headers);
+    }
+  }
+
+  @Configure
+  protected void setResponseExcludeHeaders(@Default(" ") String headers) {
+    if(headers.equals(" ")) {
+      this.responseExcludeHeaders = new HashSet<>(Arrays.asList(SET_COOKIE, WWW_AUTHENTICATE));
+    } else {
+      this.responseExcludeHeaders = handleCommaSeparatedHeaders(headers);
+    }
+  }
+
+  @Configure
+  protected void setRemoveUrlEncoding(@Default("false") String removeUrlEncoding) {
+    this.removeUrlEncoding = Boolean.parseBoolean(removeUrlEncoding);
   }
 
   protected int getReplayBufferSize() {
@@ -319,7 +352,34 @@ public class DefaultDispatch extends AbstractGatewayDispatch {
   }
 
   public Set<String> getOutboundResponseExcludeHeaders() {
-    return outboundResponseExcludeHeaders;
+    return responseExcludeHeaders;
   }
 
+  @Override
+  public Set<String> getOutboundRequestExcludeHeaders() {
+    return requestExcludeHeaders;
+  }
+
+  @Override
+  public URI getDispatchUrl(HttpServletRequest request) {
+    if (removeUrlEncoding) {
+      String base = request.getRequestURI();
+      StringBuffer str = new StringBuffer();
+      str.append(base);
+      String query = request.getQueryString();
+      if (query != null) {
+        try {
+          query = URLDecoder.decode(query, StandardCharsets.UTF_8.name());
+        } catch (UnsupportedEncodingException e) {
+          // log
+        }
+        str.append('?');
+        str.append(query);
+      }
+      encodeUnwiseCharacters(str);
+      return URI.create(str.toString());
+    }
+
+    return super.getDispatchUrl(request);
+  }
 }
